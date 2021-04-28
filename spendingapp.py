@@ -8,6 +8,9 @@ from tkinter import*
 import tkinter as tk
 import tkinter.messagebox as tkBox
 import numpy as np 
+from tkcalendar import* 
+
+
 
 
 def sign_in(): 
@@ -26,19 +29,22 @@ def sign_in():
         
 
 window=Tk() 
-window.geometry("400x300") 
+window.geometry("600x500") 
 window.title("Spending App 2021")
-btn=Button(window, text="Login", fg='red', width=10 , command=sign_in)
+btn=Button(window, text="Login", fg='red', width=10 , command=sign_in) 
+
+mycal = Calendar(window, setmode='day', date_pattern='d/m/yy')
+mycal.place(x=1, y=300)
 
 lbl1=Label(window, text=" ENTER PASSWORD BELOW FOR ACCESS", fg='green', font=("Helvetica", 10))
-lbl1.place(x=80, y=45)
+lbl1.place(x=150, y=45)
 
-btn.place(x=175, y=170)
+btn.place(x=250, y=170)
 lbl=Label(window, text = "PASSWORD :")
 
-lbl.place(x=100, y=100)
+lbl.place(x=145, y=100)
 txtfld=Entry(window, show='*', fg='blue')
-txtfld.place(x=175, y=101)
+txtfld.place(x=220, y=101)
 
 password = ["1234", "daniel"]  
 window.mainloop() 
@@ -55,7 +61,8 @@ class App:
         alignstr = '%dx%d+%d+%d' % (width, height,
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
-        root.resizable(width=False, height=False)
+        root.resizable(width=False, height=False) 
+        
         
         
 
