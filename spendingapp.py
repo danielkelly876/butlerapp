@@ -40,13 +40,13 @@ lbl.place(x=100, y=100)
 txtfld=Entry(window, show='*', fg='blue')
 txtfld.place(x=175, y=101)
 
-password = ["engineer", "daniel"]  
+password = ["1234", "daniel"]  
 window.mainloop() 
 
 class App:
     def __init__(self, root):
         # setting title
-        root.title("CSV Graphical user interface")
+        root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel")
         # setting window size
         width = 600
         height = 600
@@ -56,6 +56,7 @@ class App:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
+        
         
 
 if __name__ == "__main__":
