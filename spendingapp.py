@@ -36,6 +36,7 @@ btn=Button(window, text="Login", fg='red', width=10 , command=sign_in)
 mycal = Calendar(window, setmode='day', date_pattern='d/m/yy')
 mycal.place(x=1, y=300)
 
+
 lbl1=Label(window, text=" ENTER PASSWORD BELOW FOR ACCESS", fg='green', font=("Helvetica", 10))
 lbl1.place(x=150, y=45)
 
@@ -44,7 +45,13 @@ lbl=Label(window, text = "PASSWORD :")
 
 lbl.place(x=145, y=100)
 txtfld=Entry(window, show='*', fg='blue')
-txtfld.place(x=220, y=101)
+txtfld.place(x=220, y=101)  
+
+my_menu = Menu(window) 
+window.config(menu=my_menu) 
+file_menu = Menu(my_menu)
+my_menu.add_cascade(label="File", menu=file_menu)
+
 
 password = ["1234", "daniel"]  
 window.mainloop() 
@@ -63,7 +70,7 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
         
-        
+      
         
 
 if __name__ == "__main__":
