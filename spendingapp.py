@@ -92,10 +92,13 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
         
-        self.logout_btn=Button(root, text="  LOGOUT  ")
+        self.logout_btn=Button(root, text="  LOGOUT  ", fg="red")
         self.logout_btn.place(x=600, y=50)
         self.addtrans_btn=Button(root, text="ADD TRANSACTION")
         self.addtrans_btn.place(x=550, y=100)
+        self.eacc_btn=Button(root, text=" EDIT ACC.")
+        self.eacc_btn.place(x=600, y= 140)
+        
       
         
 
