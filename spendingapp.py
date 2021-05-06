@@ -4,11 +4,12 @@ Created on Sun Apr 25 08:11:34 2021
 
 @author: kingpc
 """
-from tkinter import* 
+from tkinter import * 
 import tkinter as tk
 import tkinter.messagebox as tkBox
 import numpy as np 
 from tkcalendar import* 
+import time 
 
 
 
@@ -47,10 +48,33 @@ lbl.place(x=145, y=100)
 txtfld=Entry(window, show='*', fg='blue')
 txtfld.place(x=220, y=101)  
 
+def clock(): 
+    hour = time.strftime("%H")
+    minute = time.strftime("%M")
+    second = time.strftime("%S")
+    my_label.config(text=hour + ":" + minute + ":" + second)
+
+def update(): 
+    my_label.config(text="new text")
+        
+my_label = Label(window, text="", font=("Helvetica", 26), fg="red", bg="black")
+my_label.place(x=400, y=300) 
+
+clock() 
+        
+#my_label.after(3000, update)
+
 my_menu = Menu(window) 
 window.config(menu=my_menu) 
 file_menu = Menu(my_menu)
 my_menu.add_cascade(label="File", menu=file_menu)
+my_menu.add_cascade(label="Edit", menu=file_menu) 
+my_menu.add_cascade(label="Options", menu=file_menu)
+my_menu.add_cascade(label="Tools", menu=file_menu)
+my_menu.add_cascade(label="Window", menu=file_menu)
+my_menu.add_cascade(label="Help", menu=file_menu)
+
+
 
 
 password = ["1234", "daniel"]  
@@ -69,6 +93,7 @@ class App:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
+        
         
       
         
