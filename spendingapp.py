@@ -10,8 +10,9 @@ import tkinter.messagebox as tkBox
 import numpy as np 
 from tkcalendar import* 
 import time 
-
-
+import sqlite3 
+import os 
+os.system('clear')
 
 
 def sign_in(): 
@@ -91,6 +92,20 @@ class App:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
+        
+        #connect to the database
+        conn = sqlite3.connect('transactions.db')
+        c = conn.cursor() 
+        c.execute(""" CREATE TABLE transactions (
+                   rent real,
+                   travel real,
+                   groceries real,
+                   subscriptions real,
+                   cigarettes real,
+                   )""")
+        
+        conn.close()
+        
         
         self.logout_btn=Button(root, text="  LOGOUT  ", fg="red")
         self.logout_btn.place(x=600, y=50)
