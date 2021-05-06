@@ -53,7 +53,7 @@ def clock():
     minute = time.strftime("%M")
     second = time.strftime("%S")
     my_label.config(text=hour + ":" + minute + ":" + second)
-
+    my_label.after(1000, clock)
 def update(): 
     my_label.config(text="new text")
         
@@ -75,8 +75,6 @@ my_menu.add_cascade(label="Window", menu=file_menu)
 my_menu.add_cascade(label="Help", menu=file_menu)
 
 
-
-
 password = ["1234", "daniel"]  
 window.mainloop() 
 
@@ -85,7 +83,7 @@ class App:
         # setting title
         root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel")
         # setting window size
-        width = 600
+        width = 700
         height = 600
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
@@ -94,7 +92,10 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
         
-        
+        self.logout_btn=Button(root, text="  LOGOUT  ")
+        self.logout_btn.place(x=600, y=50)
+        self.addtrans_btn=Button(root, text="ADD TRANSACTION")
+        self.addtrans_btn.place(x=550, y=100)
       
         
 
