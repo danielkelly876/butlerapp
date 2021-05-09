@@ -14,7 +14,7 @@ import sqlite3
 import os 
 os.system('clear')
 
-
+#%% sign in function
 def sign_in(): 
     enter_password = (txtfld.get())
     if enter_password in password: 
@@ -28,8 +28,8 @@ def sign_in():
             tkBox.showinfo('error')
     else:
         tkBox.showinfo('wrong passcode')
-        
 
+#%% login page
 window=Tk() 
 window.geometry("600x500") 
 window.title("Spending App 2021")
@@ -75,10 +75,10 @@ my_menu.add_cascade(label="Tools", menu=file_menu)
 my_menu.add_cascade(label="Window", menu=file_menu)
 my_menu.add_cascade(label="Help", menu=file_menu)
 
-
 password = ["1234", "daniel"]  
 window.mainloop() 
 
+#%% MAIN WINDOW
 class App:
     def __init__(self, root):
         # setting title
@@ -92,27 +92,45 @@ class App:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False) 
-        
-        #connect to the database
-        conn = sqlite3.connect('transactions.db')
-        c = conn.cursor() 
-        c.execute(""" CREATE TABLE transactions (
-                   rent real,
-                   travel real,
-                   groceries real,
-                   subscriptions real,
-                   cigarettes real,
-                   )""")
-        
-        conn.close()
-        
-        
-        self.logout_btn=Button(root, text="  LOGOUT  ", fg="red")
+    #%% add transaction function   
+        def addtrans(): 
+            newWin = Toplevel(root) 
+            width = 600
+            height = 400 
+            screenwidth = root.winfo_screenwidth()
+            screenheight = root.winfo_screenheight()
+            alignstr = '%dx%d+%d+%d' % (width, height,
+                                    (screenwidth - width) / 2, (screenheight - height) / 2)
+            newWin.geometry(alignstr)
+            newWin.resizable(width=False, height=False)   
+            lbl1 = Label(newWin, text="Enter amount in Euros :")
+            lbl1.place(x=180 , y=50)
+            
+    #%% add trans function ^        
+       
+    #%%
+        self.logout_btn=Button(root, text="  LOGOUT  ", fg="red", command=root.destroy)
         self.logout_btn.place(x=600, y=50)
-        self.addtrans_btn=Button(root, text="ADD TRANSACTION")
+        self.addtrans_btn=Button(root, text="ADD TRANSACTION", command=addtrans)
         self.addtrans_btn.place(x=550, y=100)
         self.eacc_btn=Button(root, text=" EDIT ACC.")
         self.eacc_btn.place(x=600, y= 140)
+        
+        #connect to the database
+        '''
+        conn = sqlite3.connect('transaction.db')
+        c = conn.cursor() 
+        c.execute(""" CREATE TABLE transactions (
+                  rent real,
+                  travel real,
+                  groceries real,
+                  subscriptions real,
+                  cigarettes real,
+                  )""")
+        
+        conn.close()
+        '''
+       
         
       
         
@@ -121,8 +139,8 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
     root.mainloop()
-
-  
+#%%
+ 
 
 
 
