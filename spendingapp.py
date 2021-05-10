@@ -35,7 +35,7 @@ window.geometry("600x500")
 window.title("Spending App 2021")
 btn=Button(window, text="Login", fg='red', width=10 , command=sign_in) 
 
-mycal = Calendar(window, setmode='day', date_pattern='d/m/yy')
+mycal = Calendar(window, setmode='day', date_pattern='d/m/yy', font="Arial 8")
 mycal.place(x=1, y=300)
 
 
@@ -102,8 +102,14 @@ class App:
         self.eacc_btn=Button(root, text=" EDIT ACC.")
         self.eacc_btn.place(x=600, y= 140)
         self.set_bttn=Button(root, text="   SETUP    ")
-        self.set_bttn.place(x=603, y=190)
-        
+        self.set_bttn.place(x=603, y=190) 
+        self.query() 
+        self.balancefigure = Label(root, text=" EUROS IN BANK : ",font=("Helvetica", 11), fg="green")
+        self.balancefigure.place(x=160, y=50)
+        self.acc_sumbtn=Button(root, text=" ACC. SUMMARY ")
+        self.acc_sumbtn.place(x=564, y=240)
+        self.supalotto=Button(root, text="    LOTTO     ")
+        self.supalotto.place(x=590, y=280)
         #connect to the database
      
     conn = sqlite3.connect('expenses.db')
@@ -120,15 +126,15 @@ class App:
     def query(self): 
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor() 
-        c.execute("SELECT *, oid FROM MoneySpent")
+        c.execute("SELECT SUM(EUROS) FROM MoneySpent WHERE EUROS > 0")
         records =  c.fetchall()
        # print(records) 
         
         print_records = ''
         for record in records: 
             print_records += str(record[0]) + "\n"
-        query_label = Label(self.newWin, text=print_records)
-        query_label.place(x=300, y=250)
+        query_label = Label(root, text=print_records, font=("Helvetica", 11), fg='red')
+        query_label.place(x=300, y=50)
             
         
         conn.commit() 
@@ -181,8 +187,8 @@ class App:
         self.txtfld2.place(x=299, y=120)
         self.submit_btn=Button(self.newWin, text="SUBMIT RECORD TO DATABASE", command=lambda: self.submit())
         self.submit_btn.place(x=280, y=160) 
-        self.showbtn=Button(self.newWin,  text="   SHOW DATA  ", command=lambda: self.query())
-        self.showbtn.place(x=280, y=200)
+      
+        
             
     #%% add trans function       
        
@@ -195,8 +201,8 @@ class App:
         self.eacc_btn.place(x=600, y= 140)
         self.set_bttn=Button(root, text="   SETUP    ")
         self.set_bttn.place(x=603, y=190)
-        
-        
+        self.acc_sumbtn=Button(root, text=" ACC. SUMMARY ")
+        self.acc_sumbtn.place(x=603, y=180)
         
         
     
