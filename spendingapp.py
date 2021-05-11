@@ -11,8 +11,12 @@ import numpy as np
 from tkcalendar import*
 import time 
 import sqlite3 
-import os 
+import os
+from PIL import Image, ImageTk
 os.system('clear')
+
+background_color="#0A2455"
+
 
 #%% sign in function
 def sign_in(): 
@@ -30,24 +34,36 @@ def sign_in():
         tkBox.showinfo('wrong passcode')
 
 #%% login page
-window=Tk() 
-window.geometry("600x500") 
+window=Tk()
+img=Image.open("Loginbackground.png")
+img = img.resize((350, 460), Image.ANTIALIAS)
+img_set=ImageTk.PhotoImage(img)
+window.configure(background=background_color)
+window.geometry("800x500")
 window.title("Spending App 2021")
-btn=Button(window, text="Login", fg='red', width=10 , command=sign_in) 
+
+background_label=Label(window, image=img_set)
+background_label.place(x=5, y=15)
+
 
 mycal = Calendar(window, setmode='day', date_pattern='d/m/yy', font="Arial 8")
-mycal.place(x=1, y=300)
+mycal.place(x=65, y=180)
 
 
-lbl1=Label(window, text=" ENTER PASSWORD BELOW FOR ACCESS", fg='green', font=("Helvetica", 10))
-lbl1.place(x=150, y=45)
+lbl1=Label(window, text="Login Here !", fg='white', bg=background_color, font=("Lilita One", 18))
+lbl1.place(x=500, y=105)
 
-btn.place(x=250, y=170)
-lbl=Label(window, text = "PASSWORD :")
+lbl=Label(window, text = "Type Your password", fg='white', bg=background_color, font=("Lilita One", 10))
+lbl.place(x=495, y=150)
 
-lbl.place(x=145, y=100)
-txtfld=Entry(window, show='*', fg='blue')
-txtfld.place(x=220, y=101)  
+txtfld=Entry(window, show='*', fg='black', width=28)
+txtfld.place(x=470, y=175, height=25)
+
+btn=Button(window, text="Login", fg='white', bg="#008CFF", width=20, height=2, command=sign_in, font=("Lilita One", 12))
+btn.place(x=460, y=210)
+
+
+
 
 def clock(): 
     hour = time.strftime("%H")
@@ -58,8 +74,8 @@ def clock():
 def update(): 
     my_label.config(text="new text")
         
-my_label = Label(window, text="", font=("Helvetica", 26), fg="red", bg="black")
-my_label.place(x=400, y=300) 
+my_label = Label(window, text="", font=("Lilita One", 26), fg="white", bg=background_color)
+my_label.place(x=115, y=120)
 
 clock() 
         
@@ -84,8 +100,8 @@ class App:
         # setting title
         root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel")
         # setting window size
-        width = 700
-        height = 600
+        width = 800
+        height = 500
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height,
@@ -110,6 +126,7 @@ class App:
         self.acc_sumbtn.place(x=564, y=240)
         self.supalotto=Button(root, text="    LOTTO     ")
         self.supalotto.place(x=590, y=280)
+       
         #connect to the database
      
     conn = sqlite3.connect('expenses.db')
@@ -187,7 +204,8 @@ class App:
         self.txtfld2.place(x=299, y=120)
         self.submit_btn=Button(self.newWin, text="SUBMIT RECORD TO DATABASE", command=lambda: self.submit())
         self.submit_btn.place(x=280, y=160) 
-      
+        self.chkbttn=Checkbutton(self.newWin, text="Money Into Bank?")
+        self.chkbttn.place(x=280, y=200)
         
             
     #%% add trans function       
