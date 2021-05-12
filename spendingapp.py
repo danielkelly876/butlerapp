@@ -5,12 +5,13 @@ Created on Sun Apr 25 08:11:34 2021
 @author: kingpc
 """
 from tkinter import*
+from tkinter import ttk
 import tkinter as tk
 import tkinter.messagebox as tkBox
-import numpy as np 
+import numpy as np
 from tkcalendar import*
-import time 
-import sqlite3 
+import time
+import sqlite3
 import os
 from PIL import Image, ImageTk
 os.system('clear')
@@ -107,7 +108,7 @@ class App:
     def __init__(self, root):
 
         # setting title
-        root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel")
+        root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | MainScreen")
         # setting window size
         width = 800
         height = 500
@@ -120,84 +121,110 @@ class App:
         # self.mycal = Calendar(root, setmode='day', date_pattern='d/m/yy')
         # self.mycal.place(x=5, y=311)
 
+        my_menu = Menu(root)
+        root.config(menu=my_menu)
+
+        file_menu = Menu(my_menu)
+        file_menu.add_command(label="Item")
+        file_menu.add_command(label="Exit", command=root.destroy)
+        my_menu.add_cascade(label="File", menu=file_menu)
+
+        edit_menu = Menu(my_menu)
+        edit_menu.add_command(label="Edit")
+        my_menu.add_cascade(label="Edit", menu=edit_menu)
+
+
+        my_menu.add_cascade(label="Options", menu=file_menu)
+        my_menu.add_cascade(label="Tools", menu=file_menu)
+        my_menu.add_cascade(label="Window", menu=file_menu)
+        my_menu.add_cascade(label="Help", menu=file_menu)
+
+
+
         self.btn_img = Image.open("assets/LogOutButton.png")
         self.btn_img=self.btn_img.resize((55, 35), Image.ANTIALIAS)
         self.btn_imgSet=ImageTk.PhotoImage(self.btn_img)
-        
-        self.logout_btn=Button(root, command=root.destroy, fg="white", bg="#25BCAF", image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
+
+        self.logout_btn=Button(root, command=root.destroy, fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
         self.logout_btn.place(x=671, y=50)
-        self.addtrans_btn=Button(root, command=lambda: self.addtrans(), fg="white", bg="#25BCAF", image=self.btn_imgSet, text="Add Transaction", compound="right", font=("Lilita One", 16))
+        self.addtrans_btn=Button(root, command=lambda: self.addtrans(), fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="Add Transaction", compound="right", font=("Lilita One", 16))
         self.addtrans_btn.place(x=588, y=100)
-        self.eacc_btn=Button(root, fg="white", bg="#25BCAF", image=self.btn_imgSet, text="Edit Account", compound="right", font=("Lilita One", 16))
+        self.eacc_btn=Button(root, fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="Edit Account", compound="right", font=("Lilita One", 16))
         self.eacc_btn.place(x=623, y= 150)
-        self.set_bttn=Button(root, fg="white", bg="#25BCAF", image=self.btn_imgSet, text="Setup", compound="right", font=("Lilita One", 16))
+        self.set_bttn=Button(root, command=lambda: self.setup() ,fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="Setup", compound="right", font=("Lilita One", 16))
         self.set_bttn.place(x=684, y=200)
-        self.query() 
-        self.balancefigure = Label(root, text=" Euros In Bank : ",font=("Lilita One", 11), fg="green")
-        self.balancefigure.place(x=160, y=50)
-        self.acc_sumbtn=Button(root, fg="white", bg="#25BCAF", image=self.btn_imgSet, text="Account Summary", compound="right", font=("Lilita One", 16))
+        self.query()
+        self.dashboardLabel=Label(root, text="MainScreen ",font=("Lilita One", 14, "underline"), fg="black")
+        self.dashboardLabel.place(x=350, y=5)
+        self.balancefigure = Label(root, text="Euros in bank : ",font=("Lilita One", 16), fg="#25BCAF")
+        self.balancefigure.place(x=210, y=50)
+        self.acc_sumbtn=Button(root, command=lambda: self.account_summary() ,fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="Account Summary", compound="right", font=("Lilita One", 16))
         self.acc_sumbtn.place(x=572, y=250)
-        self.supalotto=Button(root, fg="white", bg="#25BCAF", image=self.btn_imgSet, text="Lotto", compound="right", font=("Lilita One", 16))
-        self.supalotto.place(x=690, y=300)
-       
+        self.supalotto=Button(root, fg="white", bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet, text="Play Lotto", compound="right", font=("Lilita One", 16))
+        self.supalotto.place(x=645, y=300)
+
         #connect to the database
-     
+
     conn = sqlite3.connect('expenses.db')
-    c = conn.cursor() 
+    c = conn.cursor()
     #c.execute(""" CREATE TABLE MoneySpent (
-                # EUROS real, 
-                 #CATEGORY text, 
+                # EUROS real,
+                 #CATEGORY text,
                  #PLACE text
                  #)""")
-        
+
     conn.close()
-    
+
     #%% QUERY function
-    def query(self): 
+    def query(self):
         conn = sqlite3.connect('expenses.db')
-        c = conn.cursor() 
+        c = conn.cursor()
         c.execute("SELECT SUM(EUROS) FROM MoneySpent WHERE EUROS > 0")
         records =  c.fetchall()
-       # print(records) 
-        
+       # print(records)
+
         print_records = ''
-        for record in records: 
+        for record in records:
             print_records += str(record[0]) + "\n"
-        query_label = Label(root, text=print_records, font=("Helvetica", 11), fg='red')
-        query_label.place(x=300, y=50)
-            
-        
-        conn.commit() 
-        conn.close() 
-     #%%   
+        query_label = Label(root, text=print_records, font=("Lilita One", 16), fg='#f06292')
+        query_label.place(x=350, y=50)
+
+
+        conn.commit()
+        conn.close()
+     #%%
+    def get_category_value(self, *args):
+        return self.cat_var.get()
+    def get_month_value(self, *args):
+        return self.month_var.get()
 #%% SUBMIT FUNCTION
-    def submit(self): 
-            conn = sqlite3.connect('expenses.db') 
-            c = conn.cursor() 
-            c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE)", 
+    def submit(self):
+            conn = sqlite3.connect('expenses.db')
+            c = conn.cursor()
+            c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE)",
                       {
                           'EUROS': self.euros.get(),
-                          'CATEGORY': self.cat_entry.get(), 
+                          'CATEGORY': self.get_category_value(),
                           'PLACE': self.txtfld2.get()
-            
-                      }) 
-                
-            conn.commit() 
-            conn.close() 
-    
-            self.euros.delete(0, END)  
-            self.cat_entry.delete(0,END) 
+
+                      })
+
+            conn.commit()
+            conn.close()
+
+            self.euros.delete(0, END)
             self.txtfld2.delete(0, END)
-           
-        
-        
+
+
+
     #%% add transaction function
     def open_mainMenu(self, open_scene):
         open_scene.destroy()
         self.__init__(root)
-    def addtrans(self): 
-            
-        self.newWin = Toplevel(root) 
+    def addtrans(self):
+
+        self.newWin = Toplevel(root)
+        self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Add Transaction")
         width = 800
         height = 500
         screenwidth = root.winfo_screenwidth()
@@ -205,35 +232,147 @@ class App:
         alignstr = '%dx%d+%d+%d' % (width, height,
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         self.newWin.geometry(alignstr)
-        self.newWin.resizable(width=False, height=False)   
-        self.lbl1 = Label(self.newWin, text="Enter amount in Euros :", fg='red')
-        self.lbl1.place(x=150 , y=50)
-        self.euros = Entry(self.newWin, width=20)
-        self.euros.place(x=300, y=50)
-        self.lbl2 = Label(self.newWin, text="CATEGORY :", fg='green') 
-        self.lbl2.place(x=150 , y=80)
-        self.cat_entry = Entry(self.newWin, width=20)
-        self.cat_entry.place(x=299, y=80)
-        self.place_entry = Label(self.newWin, text=" ENTER NAME OF PLACE :")
-        self.place_entry.place(x=140, y=120)
-        self.txtfld2 = Entry(self.newWin, width=20)
-        self.txtfld2.place(x=299, y=120)
-        self.submit_btn=Button(self.newWin, text="SUBMIT RECORD TO DATABASE", command=lambda: self.submit())
-        self.submit_btn.place(x=280, y=160) 
-        self.chkbttn=Checkbutton(self.newWin, text="Money Into Bank?")
-        self.chkbttn.place(x=280, y=200)
-        
-            
-    #%% add trans function       
-       
+        self.newWin.resizable(width=False, height=False)
+        self.lbl1 = Label(self.newWin, text="Amount:", fg='#25BCAF', font=("Lilita One", 14))
+        self.lbl1.place(x=210 , y=85)
+        self.euros = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.euros.place(x=300, y=85, height=30, width=150)
+        self.lbl2 = Label(self.newWin, text="Category:", fg='#25BCAF', font=("Lilita One", 14))
+        self.lbl2.place(x=200 , y=50)
+
+        self.cat_var = StringVar(self.newWin)
+        self.cat_choices = ['Rent', 'Travel', 'Groceries', 'Subscription', 'Guilty Pleasures']
+        self.cat_var.set('Rent')
+        self.cat_entry = OptionMenu(self.newWin, self.cat_var, *self.cat_choices, command=self.get_category_value)
+
+        # self.cat_var = tk.StringVar()
+        # self.cat_choices = ttk.Combobox(self.newWin, width=27, textvariable=self.cat_var)
+        # self.cat_choices['values'] = ('Rent', 'Travel', 'Groceries', 'Subscription', 'Guilty Pleasures')
+        # self.cat_choices.grid(column=1, row=5)
+        # self.cat_entry = self.cat_choices.current()
+        self.cat_entry.place(x=299, y=45, height=35, width=150)
+
+
+        # self.cat_entry.pack()
+
+        self.place_entry = Label(self.newWin, text="Date: ", fg="#25BCAF", font=("Lilita One", 16))
+        self.place_entry.place(x=232, y=117)
+        self.txtfld2 = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.txtfld2.place(x=299, y=120, height=30, width=150)
+
+        self.chkbttn=Checkbutton(self.newWin, text="Money Into Bank?", fg="#25BCAF", font=("Lilita One", 14))
+        self.chkbttn.place(x=250, y=160)
+        self.submit_btn = Button(self.newWin, text="Submit Record", command=lambda: self.submit(), fg="white", bg="#008CFF", font=("Lilita One", 14))
+        self.submit_btn.place(x=250, y=200)
+
+
+        #%% add trans function
+
     #%%
-        self.lout_btn=Button(self.newWin, text="  LOGOUT  ", fg="red", command=root.destroy)
-        self.lout_btn.place(x=600, y=50)
-        self.adtrans_btn=Button(self.newWin, text="Return to Menu", command=lambda: self.open_mainMenu(self.newWin))
-        self.adtrans_btn.place(x=550, y=100)
-        
-    
-        
+        self.lout_btn=Button(self.newWin,  command=root.destroy, fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
+        self.lout_btn.place(x=671, y=50)
+        self.rtm=Button(self.newWin, command=lambda: self.open_mainMenu(self.newWin), fg="white", bg="#25BCAF",  activebackground="#25BCAF", image=self.btn_imgSet, text="Return To Menu", compound="right", font=("Lilita One", 16))
+        self.rtm.place(x=593, y=100)
+
+
+    def setup(self):
+        self.newWin = Toplevel(root)
+        self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Setup")
+        width = 800
+        height = 500
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height,
+                                    (screenwidth - width) / 2, (screenheight - height) / 2)
+        self.newWin.geometry(alignstr)
+        self.newWin.resizable(width=False, height=False)
+
+        self.spendingTarget = Label(self.newWin, text="Spending Target:", fg='#25BCAF', font=("Lilita One", 14))
+        self.spendingTarget.place(x=150, y=85)
+        self.spendingTarget_amount = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.spendingTarget_amount.place(x=300, y=85, height=30, width=150)
+
+        self.savingsTarget = Label(self.newWin, text="Saving Target:", fg='#25BCAF', font=("Lilita One", 14))
+        self.savingsTarget.place(x=171, y=50)
+        self.savingsTarget_amount = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.savingsTarget_amount.place(x=299, y=45, height=30, width=150)
+
+        self.estimatedBudget = Label(self.newWin, text="Estimated Budget: ", fg="#25BCAF", font=("Lilita One", 14))
+        self.estimatedBudget.place(x=140, y=117)
+        self.estimatedBudget_amount = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.estimatedBudget_amount.place(x=299, y=120, height=30, width=150)
+
+        self.submit_btn = Button(self.newWin, text="Submit Record", command=lambda: self.submit(), fg="white",
+                                 bg="#008CFF", font=("Lilita One", 14))
+        self.submit_btn.place(x=250, y=170)
+
+        # %% add trans function
+
+        # %%
+        self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
+                               image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
+        self.lout_btn.place(x=671, y=50)
+        self.rtm = Button(self.newWin, command=lambda: self.open_mainMenu(self.newWin), fg="white",
+                                  bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
+                                  text="Return To Menu", compound="right", font=("Lilita One", 16))
+        self.rtm.place(x=593, y=100)
+
+    def account_summary(self):
+        self.newWin = Toplevel(root)
+        self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Account Summary")
+        width = 800
+        height = 500
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height,
+                                    (screenwidth - width) / 2, (screenheight - height) / 2)
+        self.newWin.geometry(alignstr)
+        self.newWin.resizable(width=False, height=False)
+
+        self.month_label = Label(self.newWin, text="Month:", fg='#25BCAF', font=("Lilita One", 14))
+        self.month_label.place(x=130, y=48)
+
+        self.month_var = StringVar(self.newWin)
+        self.month_choices = ['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021', 'Aug-2021', 'Sep-2021', 'Oct-2021', 'Nov-2021', 'Dec-2021']
+        self.month_var.set('Rent')
+        self.month_entry = OptionMenu(self.newWin, self.month_var, *self.month_choices, command=self.get_month_value)
+        self.month_entry.place(x=200, y=45, height=35, width=150)
+
+        self.submit_btn = Button(self.newWin, text="Filter", command=lambda: self.submit(), fg="white",
+                                 bg="#008CFF", font=("Lilita One", 14))
+        self.submit_btn.place(x=370, y=45, height=30)
+
+        self.spending = Label(self.newWin, text="Spending: ", fg='#25BCAF', font=("Lilita One", 14))
+        self.spending.place(x=535, y=372)
+        self.spending_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292')
+        self.spending_amount.place(x=630, y=370, height=30, width=150)
+
+        self.moneyIn = Label(self.newWin, text="Money In:", fg='#25BCAF', font=("Lilita One", 14))
+        self.moneyIn.place(x=532, y=412)
+        self.moneyIn_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292')
+        self.moneyIn_amount.place(x=630, y=410, height=30, width=150)
+
+
+        self.savings = Label(self.newWin, text="Savings:", fg="#25BCAF", font=("Lilita One", 14))
+        self.savings.place(x=550, y=452)
+        self.savings_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292', text="meow")
+        self.savings_amount.place(x=630, y=450, height=30, width=150)
+
+
+
+
+        # %%
+        self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
+                               image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
+        self.lout_btn.place(x=671, y=50)
+        self.rtm = Button(self.newWin, command=lambda: self.open_mainMenu(self.newWin), fg="white",
+                                  bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
+                                  text="Return To Menu", compound="right", font=("Lilita One", 16))
+        self.rtm.place(x=593, y=100)
+
+
+
+
 
 if __name__ == "__main__":
     login_view()
@@ -242,7 +381,7 @@ if __name__ == "__main__":
     root.mainloop()
 
 #%%
- 
+
 
 
 
