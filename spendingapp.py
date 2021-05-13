@@ -22,6 +22,7 @@ password = ["1234", "daniel", "asd"]
 savingsButtonState = 0
 
 
+
 def sign_in():
     enter_password = (txtfld.get())
     if enter_password in password:
@@ -183,6 +184,7 @@ class App:
         print_records="0.00"
         try:
             print_records = str(records[0][0]-records[1][0]) + "\n"
+            moneyIn_value = str(records[0[0]])
         except:
             for record in records:
                 print_records= str(record[0]) + "\n"
@@ -343,6 +345,7 @@ class App:
         self.rtm.place(x=593, y=100)
 
     def account_summary(self):
+
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Account Summary")
         width = 800
@@ -368,20 +371,19 @@ class App:
                                  bg="#008CFF", font=("Lilita One", 14))
         self.submit_btn.place(x=370, y=45, height=30)
 
-        self.spending = Label(self.newWin, text="Spending: ", fg='#25BCAF', font=("Lilita One", 14))
-        self.spending.place(x=535, y=372)
-        self.spending_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292')
-        self.spending_amount.place(x=630, y=370, height=30, width=150)
+
+
 
         self.moneyIn = Label(self.newWin, text="Money In:", fg='#25BCAF', font=("Lilita One", 14))
-        self.moneyIn.place(x=532, y=412)
-        self.moneyIn_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292')
-        self.moneyIn_amount.place(x=630, y=410, height=30, width=150)
+        self.moneyIn.place(x=532, y=372)
+
+        self.spending = Label(self.newWin, text="Spending: ", fg='#25BCAF', font=("Lilita One", 14))
+        self.spending.place(x=535, y=412)
+
 
         self.savings = Label(self.newWin, text="Savings:", fg="#25BCAF", font=("Lilita One", 14))
         self.savings.place(x=550, y=452)
-        self.savings_amount = Label(self.newWin, font=("Lilita One", 14), fg='#f06292', text="meow")
-        self.savings_amount.place(x=630, y=450, height=30, width=150)
+
 
         # %%
         self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
@@ -391,6 +393,39 @@ class App:
                           bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
                           text="Return To Menu", compound="right", font=("Lilita One", 16))
         self.rtm.place(x=593, y=100)
+
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        c.execute("SELECT SUM(EUROS) FROM MoneySpent GROUP BY STATUS")
+        records = c.fetchall()
+        moneyIn_value="0"
+        spending_value="0"
+        savings_value="0"
+        try:
+            savings_value = str(records[0][0] - records[1][0])
+            moneyIn_value = str(records[0][0])
+            spending_value= str(records[1][0])
+        except:
+            for record in records:
+                print_records = str(record[0])
+
+                moneyIn_value = str(record[0])
+                savings_value = moneyIn_value
+                spending_value = "0"
+
+
+
+        self.moneyIn_amount = Label(self.newWin, text=moneyIn_value, font=("Lilita One", 14), fg='#f06292')
+        self.moneyIn_amount.place(x=630, y=370, height=30, width=150)
+
+        self.spending_amount = Label(self.newWin, text=spending_value, font=("Lilita One", 14), fg='#f06292')
+        self.spending_amount.place(x=630, y=410, height=30, width=150)
+
+        self.savings_amount = Label(self.newWin, text=savings_value, font=("Lilita One", 14), fg='#f06292')
+        self.savings_amount.place(x=630, y=450, height=30, width=150)
+
+        conn.commit()
+        conn.close()
 
 
 if __name__ == "__main__":
