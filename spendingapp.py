@@ -14,6 +14,9 @@ import time
 import sqlite3
 import os
 from PIL import Image, ImageTk
+from pandas import DataFrame
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 os.system('clear')
 
@@ -33,9 +36,9 @@ def sign_in():
         if enter_password == (password[password_Index]):
             window.destroy()
         else:
-            tkBox.showinfo('error')
+            tkBox.showinfo('error', "Please Try Again")
     else:
-        tkBox.showinfo('wrong passcode')
+        tkBox.showinfo('wrong passcode',"Please Try Again")
 
 
 window = Tk()
@@ -101,6 +104,45 @@ def update():
 # %% MAIN WINDOW
 class App:
     def __init__(self, root):
+
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        c.execute("SELECT rowid, saving, spending, budget FROM target")
+        records = c.fetchall()
+        # print_records = "0.00"
+        # try:
+        #     print_records = str(records[0][0] - records[1][0])
+        # except:
+        #     for record in records:
+        #         print_records = str(record[0])
+        id_array=[]
+        saving_array=[]
+        spending_array=[]
+        budget_array=[]
+
+        for record in records:
+            id_array.append(record[0])
+            saving_array.append(record[1])
+            spending_array.append(record[2])
+            budget_array.append(record[3])
+
+        conn.commit()
+        conn.close()
+
+        data2 = {'id': id_array,
+                 'saving': saving_array,
+                 'spending': spending_array,
+                 'budget': budget_array
+                 }
+        df2 = DataFrame(data2, columns=['id', 'saving', 'spending', 'budget'])
+
+        figure2 = plt.Figure(figsize=(5, 4), dpi=100)
+        ax2 = figure2.add_subplot(111)
+        line2 = FigureCanvasTkAgg(figure2, root)
+        line2.get_tk_widget().place(x=5, y=100)
+        df2 = df2[['id', 'saving', 'spending', 'budget']].groupby('id').sum()
+        df2.plot(kind='line', legend=True, ax=ax2, color='r', marker='o', fontsize=10)
+        ax2.set_title('Targets')
 
         # setting title
         root.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | MainScreen")
@@ -183,11 +225,10 @@ class App:
         records = c.fetchall()
         print_records="0.00"
         try:
-            print_records = str(records[0][0]-records[1][0]) + "\n"
-            moneyIn_value = str(records[0[0]])
+            print_records = str(records[0][0]-records[1][0])
         except:
             for record in records:
-                print_records= str(record[0]) + "\n"
+                print_records= str(record[0])
         query_label = Label(root, text=print_records, font=("Lilita One", 16), fg='#f06292')
         query_label.place(x=350, y=50)
 
@@ -302,6 +343,23 @@ class App:
                           font=("Lilita One", 16))
         self.rtm.place(x=593, y=100)
 
+    def submit_setup(self):
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+
+        c.execute("INSERT INTO target VALUES(:saving, :spending, :budget)",
+                  {
+                      'saving': self.savingsTarget_amount.get(),
+                      'spending': self.spendingTarget_amount.get(),
+                      'budget': self.estimatedBudget_amount.get(),
+
+                  })
+
+        messagebox.showinfo("Confirmation", "Target Added")
+
+        conn.commit()
+        conn.close()
+
     def setup(self):
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Setup")
@@ -329,7 +387,7 @@ class App:
         self.estimatedBudget_amount = Entry(self.newWin, width=20, font=("Lilita One", 14))
         self.estimatedBudget_amount.place(x=299, y=120, height=30, width=150)
 
-        self.submit_btn = Button(self.newWin, text="Submit Record", fg="white",
+        self.submit_btn = Button(self.newWin,command=self.submit_setup ,text="Submit Record", fg="white",
                                  bg="#008CFF", font=("Lilita One", 14))
         self.submit_btn.place(x=250, y=170)
 
