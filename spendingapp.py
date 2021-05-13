@@ -7,6 +7,7 @@ Created on Sun Apr 25 08:11:34 2021
 from tkinter import *
 import tkinter as tk
 import tkinter.messagebox as tkBox
+from tkinter import messagebox
 import numpy as np
 from tkcalendar import *
 import time
@@ -177,13 +178,14 @@ class App:
     def query(self):
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
-        c.execute("SELECT SUM(EUROS) FROM MoneySpent WHERE EUROS > 0")
+        c.execute("SELECT SUM(EUROS) FROM MoneySpent GROUP BY STATUS")
         records = c.fetchall()
-        # print(records)
-
-        print_records = ''
-        for record in records:
-            print_records += str(record[0]) + "\n"
+        print_records="0.00"
+        try:
+            print_records = str(records[0][0]-records[1][0]) + "\n"
+        except:
+            for record in records:
+                print_records= str(record[0]) + "\n"
         query_label = Label(root, text=print_records, font=("Lilita One", 16), fg='#f06292')
         query_label.place(x=350, y=50)
 
@@ -199,21 +201,25 @@ class App:
 
     # %% SUBMIT FUNCTION
     def submit(self):
+
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
         locCheckState= "spending"
         if savingsButtonState==1:
             locCheckState= "saving"
 
-        c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :DATE, :STATUS)",
+        c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :STATUS, :DATE)",
                   {
                       'EUROS': self.euros.get(),
                       'CATEGORY': self.get_category_value(),
                       'PLACE': self.purposeValue.get(),
-                      "DATE": self.txtfld2.get(),
-                      "STATUS": locCheckState
+                      "STATUS": locCheckState ,
+                      "DATE": self.txtfld2.get()
 
                   })
+
+        messagebox.showinfo("Confirmation","Transaction Added")
+
 
         conn.commit()
         conn.close()
