@@ -17,6 +17,8 @@ from PIL import Image, ImageTk
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from itertools import cycle, islice
+from datetime import date
 
 os.system('clear')
 
@@ -136,12 +138,13 @@ class App:
                  }
         df2 = DataFrame(data2, columns=['id', 'saving', 'spending', 'budget'])
 
+
         figure2 = plt.Figure(figsize=(5, 4), dpi=100)
         ax2 = figure2.add_subplot(111)
         line2 = FigureCanvasTkAgg(figure2, root)
         line2.get_tk_widget().place(x=5, y=100)
         df2 = df2[['id', 'saving', 'spending', 'budget']].groupby('id').sum()
-        df2.plot(kind='line', legend=True, ax=ax2, color='r', marker='o', fontsize=10)
+        df2.plot(kind='line', legend=True, ax=ax2, color=list(islice(cycle(['r', 'g', 'b']), None, len(df2))), marker='o', fontsize=10)
         ax2.set_title('Targets')
 
         # setting title
@@ -322,7 +325,8 @@ class App:
 
         self.place_entry = Label(self.newWin, text="Date: ", fg="#25BCAF", font=("Lilita One", 14))
         self.place_entry.place(x=235, y=157)
-        self.txtfld2 = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.txtfld2 = Entry(self.newWin, width=20 , font=("Lilita One", 14))
+        self.txtfld2.insert(END, date.today().strftime("%m/%d/%Y"))
         self.txtfld2.place(x=299, y=160, height=30, width=150)
 
         self.savingsButton = Checkbutton(self.newWin, text="Money Into Bank?", fg="#25BCAF",
@@ -343,15 +347,19 @@ class App:
                           font=("Lilita One", 16))
         self.rtm.place(x=593, y=100)
 
+    def get_setup_category_value(self, *args):
+        return self.cat_var_setup.get()
+
     def submit_setup(self):
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
 
-        c.execute("INSERT INTO target VALUES(:saving, :spending, :budget)",
+        c.execute("INSERT INTO target VALUES(:saving, :spending, :budget, :category)",
                   {
                       'saving': self.savingsTarget_amount.get(),
                       'spending': self.spendingTarget_amount.get(),
                       'budget': self.estimatedBudget_amount.get(),
+                      'category': self.get_setup_category_value()
 
                   })
 
@@ -387,9 +395,17 @@ class App:
         self.estimatedBudget_amount = Entry(self.newWin, width=20, font=("Lilita One", 14))
         self.estimatedBudget_amount.place(x=299, y=120, height=30, width=150)
 
+        self.categoryLabel = Label(self.newWin, text="Category: ", fg="#25BCAF", font=("Lilita One", 14))
+        self.categoryLabel.place(x=210, y=160)
+        self.cat_var_setup = StringVar(self.newWin)
+        self.cat_choices_setup = ['Rent', 'Travel', 'Groceries', 'Subscription', 'Guilty Pleasures']
+        self.cat_var_setup.set('Rent')
+        self.cat_entry_setup = OptionMenu(self.newWin, self.cat_var_setup, *self.cat_choices_setup, command=self.get_setup_category_value)
+        self.cat_entry_setup.place(x=299, y=160, height=35, width=150)
+
         self.submit_btn = Button(self.newWin,command=self.submit_setup ,text="Submit Record", fg="white",
                                  bg="#008CFF", font=("Lilita One", 14))
-        self.submit_btn.place(x=250, y=170)
+        self.submit_btn.place(x=250, y=210)
 
         # %% add trans function
 
@@ -404,6 +420,8 @@ class App:
 
     def account_summary(self):
 
+
+
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Account Summary")
         width = 800
@@ -414,6 +432,18 @@ class App:
                                     (screenwidth - width) / 2, (screenheight - height) / 2)
         self.newWin.geometry(alignstr)
         self.newWin.resizable(width=False, height=False)
+
+        data1 = {'Country': ['US', 'CA', 'GER', 'UK', 'FR'],
+                 'GDP_Per_Capita': [45000, 42000, 52000, 49000, 47000]
+                 }
+        df1 = DataFrame(data1, columns=['Country', 'GDP_Per_Capita'])
+        figure1 = plt.Figure(figsize=(5, 4), dpi=100)
+        ax1 = figure1.add_subplot(111)
+        bar1 = FigureCanvasTkAgg(figure1, self.newWin)
+        bar1.get_tk_widget().place(x=5, y=100)
+        df1 = df1[['Country', 'GDP_Per_Capita']].groupby('Country').sum()
+        df1.plot(kind='bar', legend=True, ax=ax1)
+        ax1.set_title('Category Vs. TargetSpending/Spending')
 
         self.month_label = Label(self.newWin, text="Month:", fg='#25BCAF', font=("Lilita One", 14))
         self.month_label.place(x=130, y=48)
