@@ -8,7 +8,7 @@ import random
 from tkinter import *
 import tkinter as tk
 import tkinter.messagebox as tkBox
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 import numpy as np
 from tkcalendar import *
 import time
@@ -19,7 +19,8 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from itertools import cycle, islice
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+import csv
 
 os.system('clear')
 
@@ -27,15 +28,18 @@ background_color = "#0A2455"
 password = ["1234", "daniel", "asd"]
 savingsButtonState = 0
 locMonth="Jan-2021"
+update_row_id=""
+startDate=(date.today()-timedelta(days=2)).strftime("%m/%d/%Y")
+endDate=date.today().strftime("%m/%d/%Y")
 
 
 def sign_in():
     enter_password = (txtfld.get())
     if enter_password in password:
         password_Index = (password.index(txtfld.get()))
-        print(password_Index)
-        print(enter_password)
-        print(password[password_Index])
+        # print(password_Index)
+        # print(enter_password)
+        # print(password[password_Index])
         if enter_password == (password[password_Index]):
             window.destroy()
         else:
@@ -51,6 +55,7 @@ img_set = ImageTk.PhotoImage(img)
 window.configure(background=background_color)
 window.geometry("800x500")
 window.title("Spending App 2021")
+
 
 background_label = Label(window, image=img_set)
 mycal = Calendar(window, setmode='day', date_pattern='d/m/yy', font="Arial 8")
@@ -191,7 +196,7 @@ class App:
                                    compound="right", font=("Lilita One", 16))
         self.addtrans_btn.place(x=588, y=100)
         self.eacc_btn = Button(root, fg="white", bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
-                               text="Edit Account", compound="right", font=("Lilita One", 16))
+                               text="Edit Account", compound="right", font=("Lilita One", 16), command=self.edit_account)
         self.eacc_btn.place(x=623, y=150)
         self.set_bttn = Button(root, command=lambda: self.setup(), fg="white", bg="#25BCAF", activebackground="#25BCAF",
                                image=self.btn_imgSet, text="Setup", compound="right", font=("Lilita One", 16))
@@ -248,7 +253,7 @@ class App:
     def setMonth(self, open_scene):
         global locMonth
         locMonth = self.get_month_value()
-        print(locMonth)
+        # print(locMonth)
         open_scene.destroy()
         self.account_summary()
 
@@ -262,7 +267,7 @@ class App:
         locDateTime = self.txtfld2.get().split("/")
         monthList =['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021',
                               'Aug-2021', 'Sep-2021', 'Oct-2021', 'Nov-2021', 'Dec-2021']
-        print(locDateTime[0])
+        # print(locDateTime[0])
         if savingsButtonState == 1:
             locCheckState = "saving"
 
@@ -433,7 +438,7 @@ class App:
 
     def account_summary(self):
         global locMonth
-        print("Local Month"+ locMonth)
+        # print("Local Month"+ locMonth)
 
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Account Summary")
@@ -466,8 +471,8 @@ class App:
         for record in records:
             category_array.append(record[1])
             amount_array.append(record[0])
-        print(amount_array)
-        print(category_array)
+        # print(amount_array)
+        # print(category_array)
         newAmArray = []
         for amount in amount_array:
             newAmArray.append(float(amount))
@@ -488,7 +493,8 @@ class App:
             df1.plot(kind='bar', legend=True, ax=ax1)
             ax1.set_title('Category Vs. Spending')
         except:
-            print("meow")
+            print("Failed")
+
 
         self.month_label = Label(self.newWin, text="Month:", fg='#25BCAF', font=("Lilita One", 14))
         self.month_label.place(x=130, y=48)
@@ -593,10 +599,139 @@ class App:
         else:
             tkBox.showinfo("Lotto Message", "Gambling is stupid. You Have Won Nothing")
 
+        self.__init__(root)
+
+    def select_record(self):
+        global update_row_id
+        self.amount_box.delete(0, END)
+        self.date_box.delete(0, END)
+        self.category_box.delete(0, END)
+        try:
+            selected = self.my_tree.focus()
+            values = self.my_tree.item(selected, 'values')
+            self.amount_box.insert(0, values[2])
+            self.date_box.insert(0, values[1])
+            self.category_box.insert(0, values[3])
+            update_row_id=values[0]
+        except:
+            print("No Rows Selected")
+    def update_record(self):
+        # print(self.amount_box.get())
+        # print(self.date_box.get())
+        # print(self.category_box.get())
+        # print(update_row_id)
+
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        c.execute("UPDATE MoneySpent SET EUROS='"+str(self.amount_box.get())+"', DATE='"+str(self.date_box.get())+"', CATEGORY='"+str(self.category_box.get())+"' WHERE rowid='"+str(update_row_id)+"'")
+
+        conn.commit()
+        conn.close()
+        self.edit_account()
+
+    def filter_record(self):
+        global startDate, endDate
+        startDate=self.date_first.get()
+        endDate=self.date_last.get()
+        self.edit_account()
+
+
+    def edit_account(self):
+        self.newWin = Toplevel(root)
+        self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Edit Account")
+        width = 800
+        height = 500
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height,
+                                    (screenwidth - width) / 2, (screenheight - height) / 2)
+        self.newWin.geometry(alignstr)
+        self.newWin.resizable(width=False, height=False)
+        self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
+                               image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
+        self.lout_btn.place(x=671, y=50)
+        self.rtm = Button(self.newWin, command=lambda: self.open_mainMenu(self.newWin), fg="white",
+                          bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
+                          text="Return To Menu", compound="right", font=("Lilita One", 16))
+        self.rtm.place(x=593, y=100)
+
+        self.date_first = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.date_first.insert(END, startDate)
+        self.date_first.place(x=70, y=30, height=30, width=150)
+        Label(self.newWin,text="Start Range (m/d/y)",font=("Lilita One", 10)).place(x=80, y=70)
+
+        self.date_last = Entry(self.newWin, width=20, font=("Lilita One", 14))
+        self.date_last.insert(END, endDate)
+        self.date_last.place(x=270, y=30, height=30, width=150)
+        Label(self.newWin, text="End Range (m/d/y)", font=("Lilita One", 10)).place(x=280, y=70)
+
+        self.filter_btn = Button(self.newWin, text="Filter", fg="white",
+                                bg="#008CFF", font=("Lilita One", 14), command=self.filter_record)
+        self.filter_btn.place(x=450, y=30)
+
+        self.my_tree = ttk.Treeview(self.newWin)
+        self.my_tree['columns'] = ("id", "date", "amount", "category")
+        self.my_tree.column("#0", width=80, minwidth=25)
+        self.my_tree.column("id", width=50, minwidth=25)
+        self.my_tree.column("date", anchor=W, width=80, minwidth=25)
+        self.my_tree.column("amount", anchor=CENTER, width=90, minwidth=25)
+        self.my_tree.column("category", anchor=W, width=120, minwidth=25)
+
+        self.my_tree.heading("id", text="id", anchor=W)
+        self.my_tree.heading("date", text="date", anchor=W)
+        self.my_tree.heading("amount", text="amount", anchor=CENTER)
+        self.my_tree.heading("category", text="category", anchor=W)
+
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        print(startDate)
+        print(endDate)
+        c.execute("SELECT rowid, DATE, EUROS, CATEGORY FROM MoneySpent WHERE DATE BETWEEN '"+startDate+"' AND '"+endDate+"'")
+        records = c.fetchall()
+        for record in records:
+
+            self.my_tree.insert(parent="", index="end", iid=record[0], text="Parent", values=( record[0],record[1], record[2], record[3]))
+
+
+        conn.commit()
+        conn.close()
 
 
 
+        self.my_tree.place(x=120, y=120)
 
+        add_frame = Frame(self.newWin)
+        add_frame.place(x=140, y=350)
+
+        nl = Label(add_frame, text="Amount")
+        nl.grid(row=0, column=0)
+
+        il=Label(add_frame, text="Category")
+        il.grid(row=0, column=1)
+
+        tl = Label(add_frame, text="Date")
+        tl.grid(row=0, column=2)
+
+        self.amount_box = Entry(add_frame)
+        self.amount_box.grid(row=1, column=0)
+
+        self.category_box = Entry(add_frame)
+        self.category_box.grid(row=1, column=1)
+
+        self.date_box = Entry(add_frame)
+        self.date_box.grid(row=1, column=2)
+
+        self.refresh_btn = Button(self.newWin, text="Refresh", fg="white",
+                                 bg="#008CFF", font=("Lilita One", 14), command=self.select_record)
+        self.refresh_btn.place(x=140, y=410)
+
+        self.update_btn = Button(self.newWin, text="Update", fg="white",
+                                  bg="#008CFF", font=("Lilita One", 14), command=self.update_record)
+        self.update_btn.place(x=280, y=410)
+
+        self.export_btn = Button(self.newWin, text="Export CSV", fg="white",
+                                  bg="#008CFF", font=("Lilita One", 14))
+        self.export_btn.place(x=400, y=410)
 
 
 if __name__ == "__main__":
