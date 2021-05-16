@@ -433,17 +433,46 @@ class App:
         self.newWin.geometry(alignstr)
         self.newWin.resizable(width=False, height=False)
 
-        data1 = {'Country': ['US', 'CA', 'GER', 'UK', 'FR'],
-                 'GDP_Per_Capita': [45000, 42000, 52000, 49000, 47000]
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        c.execute("SELECT SUM(EUROS), category  FROM MoneySpent WHERE STATUS='spending' GROUP BY CATEGORY")
+        records = c.fetchall()
+        # print_records = "0.00"
+        # try:
+        #     print_records = str(records[0][0] - records[1][0])
+        # except:
+        #     for record in records:
+        #         print_records = str(record[0])
+
+        # id_array = []
+        # saving_array = []
+        category_array = []
+        amount_array = []
+        #
+        for record in records:
+
+            category_array.append(record[1])
+            amount_array.append(record[0])
+        print(amount_array)
+        print(category_array)
+        newAmArray=[]
+        for amount in amount_array:
+            newAmArray.append(float(amount))
+
+        conn.commit()
+        conn.close()
+
+        data1 = {'Category': category_array,
+                 'Amount': newAmArray
                  }
-        df1 = DataFrame(data1, columns=['Country', 'GDP_Per_Capita'])
-        figure1 = plt.Figure(figsize=(5, 4), dpi=100)
+        df1 = DataFrame(data1, columns=['Category', 'Amount'])
+        figure1 = plt.Figure(figsize=(6, 5), dpi=80)
         ax1 = figure1.add_subplot(111)
         bar1 = FigureCanvasTkAgg(figure1, self.newWin)
         bar1.get_tk_widget().place(x=5, y=100)
-        df1 = df1[['Country', 'GDP_Per_Capita']].groupby('Country').sum()
+        df1 = df1[['Category', 'Amount']].groupby('Category').sum()
         df1.plot(kind='bar', legend=True, ax=ax1)
-        ax1.set_title('Category Vs. TargetSpending/Spending')
+        ax1.set_title('Category Vs. Spending')
 
         self.month_label = Label(self.newWin, text="Month:", fg='#25BCAF', font=("Lilita One", 14))
         self.month_label.place(x=130, y=48)
