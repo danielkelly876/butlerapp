@@ -1,0 +1,54 @@
+id,date,amount,category,place,status
+6,05/16/2021,575.0,Rent,Spend,spending
+7,05/16/2021,200.0,Rent,Spend,spending
+8,05/16/2021,300.0,Rent,asd,spending
+9,05/16/2021,2.5,Guilty Pleasures,Home,spending
+10,05/17/2021,5.0,Guilty Pleasures,Home,saving
+11,05/17/2021,2.5,Guilty Pleasures,Home,spending
+12,05/17/2021,2.5,Guilty Pleasures,Home,spending
+13,05/17/2021,8.0,Guilty Pleasures,Home,saving
+14,05/17/2021,2.5,Guilty Pleasures,Home,spending
+15,05/17/2021,2.5,Guilty Pleasures,Home,spending
+16,05/17/2021,10.0,Guilty Pleasures,Home,saving
+17,05/17/2021,2.5,Guilty Pleasures,Home,spending
+18,05/17/2021,10.0,Guilty Pleasures,Home,saving
+19,05/17/2021,2.5,Guilty Pleasures,Home,spending
+20,05/17/2021,2.5,Guilty Pleasures,Home,spending
+21,05/17/2021,6.0,Guilty Pleasures,Home,saving
+22,05/17/2021,2.5,Guilty Pleasures,Home,spending
+23,05/17/2021,2.5,Guilty Pleasures,Home,spending
+24,05/17/2021,2.5,Guilty Pleasures,Home,spending
+25,05/17/2021,10.0,Guilty Pleasures,Home,saving
+26,05/17/2021,2.5,Guilty Pleasures,Home,spending
+27,05/14/2021,7.0,Guilty Pleasures,Home,saving
+28,05/14/2021,10.0,Guilty Pleasures,Home,spending
+29,05/15/2021,5.0,Guilty Pleasures,Home,spending
+30,05/17/2021,2.5,Guilty Pleasures,Home,spending
+31,05/17/2021,2.5,Guilty Pleasures,Home,spending
+32,05/17/2021,7.0,Guilty Pleasures,Home,saving
+33,05/17/2021,2.5,Guilty Pleasures,Home,spending
+34,05/17/2021,6.0,Guilty Pleasures,Home,saving
+35,05/17/2021,2.5,Guilty Pleasures,Home,spending
+36,05/17/2021,2.5,Guilty Pleasures,Home,spending
+37,05/17/2021,2.5,Guilty Pleasures,Home,spending
+38,05/17/2021,2.5,Guilty Pleasures,Home,spending
+39,05/17/2021,5.0,Guilty Pleasures,Home,saving
+40,05/17/2021,2.5,Guilty Pleasures,Home,spending
+41,05/17/2021,7.0,Guilty Pleasures,Home,saving
+42,05/17/2021,2.5,Guilty Pleasures,Home,spending
+43,05/17/2021,2.5,Guilty Pleasures,Home,spending
+44,05/17/2021,10.0,Guilty Pleasures,Home,saving
+45,05/17/2021,2.5,Guilty Pleasures,Home,spending
+46,05/17/2021,2.5,Guilty Pleasures,Home,spending
+47,05/17/2021,9.0,Guilty Pleasures,Home,saving
+48,05/17/2021,2.5,Guilty Pleasures,Home,spending
+49,05/17/2021,9.0,Guilty Pleasures,Home,saving
+50,05/17/2021,2.5,Guilty Pleasures,Home,spending
+51,05/17/2021,5.0,Guilty Pleasures,Home,saving
+52,05/17/2021,2.5,Guilty Pleasures,Home,spending
+53,05/17/2021,2.5,Guilty Pleasures,Home,spending
+54,05/17/2021,2.5,Guilty Pleasures,Home,spending
+55,05/17/2021,2.5,Guilty Pleasures,Home,spending
+56,05/17/2021,7.0,Guilty Pleasures,Home,saving
+57,05/17/2021,200.0,Rent,Test,saving
+58,05/17/2021,5000.0,Rent,Salary,saving

@@ -627,13 +627,29 @@ class App:
 
         conn.commit()
         conn.close()
+        self.newWin.destroy()
         self.edit_account()
 
     def filter_record(self):
         global startDate, endDate
         startDate=self.date_first.get()
         endDate=self.date_last.get()
+        self.newWin.destroy()
         self.edit_account()
+
+    def export_csv(self):
+        with open('MoneySpent.csv', 'w', newline='') as file:
+            writer=csv.writer(file)
+            writer.writerow(["id", "date", "amount", "category", "place", "status"])
+            conn = sqlite3.connect('expenses.db')
+            c = conn.cursor()
+            c.execute("SELECT rowid, DATE, EUROS, CATEGORY, PLACE, STATUS FROM MoneySpent")
+            records = c.fetchall()
+            for record in records:
+                writer.writerow([str(record[0]), str(record[1]), str(record[2]),str(record[3]),str(record[4]),str(record[5]),])
+
+            conn.commit()
+            conn.close()
 
 
     def edit_account(self):
@@ -730,7 +746,7 @@ class App:
         self.update_btn.place(x=280, y=410)
 
         self.export_btn = Button(self.newWin, text="Export CSV", fg="white",
-                                  bg="#008CFF", font=("Lilita One", 14))
+                                  bg="#008CFF", font=("Lilita One", 14), command=self.export_csv())
         self.export_btn.place(x=400, y=410)
 
 
