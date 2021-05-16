@@ -4,6 +4,7 @@ Created on Sun Apr 25 08:11:34 2021
 
 @author: kingpc
 """
+import random
 from tkinter import *
 import tkinter as tk
 import tkinter.messagebox as tkBox
@@ -18,14 +19,14 @@ from pandas import DataFrame
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from itertools import cycle, islice
-from datetime import date
+from datetime import date, datetime
 
 os.system('clear')
 
 background_color = "#0A2455"
 password = ["1234", "daniel", "asd"]
 savingsButtonState = 0
-
+locMonth="Jan-2021"
 
 
 def sign_in():
@@ -40,7 +41,7 @@ def sign_in():
         else:
             tkBox.showinfo('error', "Please Try Again")
     else:
-        tkBox.showinfo('wrong passcode',"Please Try Again")
+        tkBox.showinfo('wrong passcode', "Please Try Again")
 
 
 window = Tk()
@@ -117,10 +118,10 @@ class App:
         # except:
         #     for record in records:
         #         print_records = str(record[0])
-        id_array=[]
-        saving_array=[]
-        spending_array=[]
-        budget_array=[]
+        id_array = []
+        saving_array = []
+        spending_array = []
+        budget_array = []
 
         for record in records:
             id_array.append(record[0])
@@ -138,13 +139,13 @@ class App:
                  }
         df2 = DataFrame(data2, columns=['id', 'saving', 'spending', 'budget'])
 
-
         figure2 = plt.Figure(figsize=(5, 4), dpi=100)
         ax2 = figure2.add_subplot(111)
         line2 = FigureCanvasTkAgg(figure2, root)
         line2.get_tk_widget().place(x=5, y=100)
         df2 = df2[['id', 'saving', 'spending', 'budget']].groupby('id').sum()
-        df2.plot(kind='line', legend=True, ax=ax2, color=list(islice(cycle(['r', 'g', 'b']), None, len(df2))), marker='o', fontsize=10)
+        df2.plot(kind='line', legend=True, ax=ax2, color=list(islice(cycle(['r', 'g', 'b']), None, len(df2))),
+                 marker='o', fontsize=10)
         ax2.set_title('Targets')
 
         # setting title
@@ -205,7 +206,7 @@ class App:
                                  compound="right", font=("Lilita One", 16))
         self.acc_sumbtn.place(x=572, y=250)
         self.supalotto = Button(root, fg="white", bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
-                                text="Play Lotto", compound="right", font=("Lilita One", 16))
+                                text="Play Lotto", compound="right", font=("Lilita One", 16), command= self.play_lotto)
         self.supalotto.place(x=645, y=300)
 
         # connect to the database
@@ -226,12 +227,12 @@ class App:
         c = conn.cursor()
         c.execute("SELECT SUM(EUROS) FROM MoneySpent GROUP BY STATUS")
         records = c.fetchall()
-        print_records="0.00"
+        print_records = "0.00"
         try:
-            print_records = str(records[0][0]-records[1][0])
+            print_records = str(records[0][0] - records[1][0])
         except:
             for record in records:
-                print_records= str(record[0])
+                print_records = str(record[0])
         query_label = Label(root, text=print_records, font=("Lilita One", 16), fg='#f06292')
         query_label.place(x=350, y=50)
 
@@ -244,28 +245,39 @@ class App:
 
     def get_month_value(self, *args):
         return self.month_var.get()
+    def setMonth(self, open_scene):
+        global locMonth
+        locMonth = self.get_month_value()
+        print(locMonth)
+        open_scene.destroy()
+        self.account_summary()
+
 
     # %% SUBMIT FUNCTION
     def submit(self):
 
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
-        locCheckState= "spending"
-        if savingsButtonState==1:
-            locCheckState= "saving"
+        locCheckState = "spending"
+        locDateTime = self.txtfld2.get().split("/")
+        monthList =['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021',
+                              'Aug-2021', 'Sep-2021', 'Oct-2021', 'Nov-2021', 'Dec-2021']
+        print(locDateTime[0])
+        if savingsButtonState == 1:
+            locCheckState = "saving"
 
-        c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :STATUS, :DATE)",
+        c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :STATUS, :DATE, :MONTH)",
                   {
                       'EUROS': self.euros.get(),
                       'CATEGORY': self.get_category_value(),
                       'PLACE': self.purposeValue.get(),
-                      "STATUS": locCheckState ,
-                      "DATE": self.txtfld2.get()
+                      "STATUS": locCheckState,
+                      "DATE": self.txtfld2.get(),
+                      "MONTH": monthList[int(locDateTime[0])-1]
 
                   })
 
-        messagebox.showinfo("Confirmation","Transaction Added")
-
+        messagebox.showinfo("Confirmation", "Transaction Added")
 
         conn.commit()
         conn.close()
@@ -281,9 +293,9 @@ class App:
 
     def savingsButtonState(self):
         global savingsButtonState
-        if savingsButtonState== 0:
+        if savingsButtonState == 0:
             savingsButtonState = 1
-        elif savingsButtonState==1:
+        elif savingsButtonState == 1:
             savingsButtonState = 0
 
     def addtrans(self):
@@ -325,7 +337,7 @@ class App:
 
         self.place_entry = Label(self.newWin, text="Date: ", fg="#25BCAF", font=("Lilita One", 14))
         self.place_entry.place(x=235, y=157)
-        self.txtfld2 = Entry(self.newWin, width=20 , font=("Lilita One", 14))
+        self.txtfld2 = Entry(self.newWin, width=20, font=("Lilita One", 14))
         self.txtfld2.insert(END, date.today().strftime("%m/%d/%Y"))
         self.txtfld2.place(x=299, y=160, height=30, width=150)
 
@@ -400,10 +412,11 @@ class App:
         self.cat_var_setup = StringVar(self.newWin)
         self.cat_choices_setup = ['Rent', 'Travel', 'Groceries', 'Subscription', 'Guilty Pleasures']
         self.cat_var_setup.set('Rent')
-        self.cat_entry_setup = OptionMenu(self.newWin, self.cat_var_setup, *self.cat_choices_setup, command=self.get_setup_category_value)
+        self.cat_entry_setup = OptionMenu(self.newWin, self.cat_var_setup, *self.cat_choices_setup,
+                                          command=self.get_setup_category_value)
         self.cat_entry_setup.place(x=299, y=160, height=35, width=150)
 
-        self.submit_btn = Button(self.newWin,command=self.submit_setup ,text="Submit Record", fg="white",
+        self.submit_btn = Button(self.newWin, command=self.submit_setup, text="Submit Record", fg="white",
                                  bg="#008CFF", font=("Lilita One", 14))
         self.submit_btn.place(x=250, y=210)
 
@@ -419,8 +432,8 @@ class App:
         self.rtm.place(x=593, y=100)
 
     def account_summary(self):
-
-
+        global locMonth
+        print("Local Month"+ locMonth)
 
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Account Summary")
@@ -433,9 +446,10 @@ class App:
         self.newWin.geometry(alignstr)
         self.newWin.resizable(width=False, height=False)
 
+
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
-        c.execute("SELECT SUM(EUROS), category  FROM MoneySpent WHERE STATUS='spending' GROUP BY CATEGORY")
+        c.execute("SELECT SUM(EUROS), category  FROM MoneySpent WHERE STATUS='spending' AND MONTH='"+locMonth+"' GROUP BY CATEGORY")
         records = c.fetchall()
         # print_records = "0.00"
         # try:
@@ -450,29 +464,31 @@ class App:
         amount_array = []
         #
         for record in records:
-
             category_array.append(record[1])
             amount_array.append(record[0])
         print(amount_array)
         print(category_array)
-        newAmArray=[]
+        newAmArray = []
         for amount in amount_array:
             newAmArray.append(float(amount))
 
         conn.commit()
         conn.close()
+        try:
 
-        data1 = {'Category': category_array,
-                 'Amount': newAmArray
-                 }
-        df1 = DataFrame(data1, columns=['Category', 'Amount'])
-        figure1 = plt.Figure(figsize=(6, 5), dpi=80)
-        ax1 = figure1.add_subplot(111)
-        bar1 = FigureCanvasTkAgg(figure1, self.newWin)
-        bar1.get_tk_widget().place(x=5, y=100)
-        df1 = df1[['Category', 'Amount']].groupby('Category').sum()
-        df1.plot(kind='bar', legend=True, ax=ax1)
-        ax1.set_title('Category Vs. Spending')
+            data1 = {'Category': category_array,
+                     'Amount': newAmArray
+                     }
+            df1 = DataFrame(data1, columns=['Category', 'Amount'])
+            figure1 = plt.Figure(figsize=(6, 5), dpi=80)
+            ax1 = figure1.add_subplot(111)
+            bar1 = FigureCanvasTkAgg(figure1, self.newWin)
+            bar1.get_tk_widget().place(x=5, y=100)
+            df1 = df1[['Category', 'Amount']].groupby('Category').sum()
+            df1.plot(kind='bar', legend=True, ax=ax1)
+            ax1.set_title('Category Vs. Spending')
+        except:
+            print("meow")
 
         self.month_label = Label(self.newWin, text="Month:", fg='#25BCAF', font=("Lilita One", 14))
         self.month_label.place(x=130, y=48)
@@ -480,16 +496,13 @@ class App:
         self.month_var = StringVar(self.newWin)
         self.month_choices = ['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021',
                               'Aug-2021', 'Sep-2021', 'Oct-2021', 'Nov-2021', 'Dec-2021']
-        self.month_var.set('Jan-2021')
+        self.month_var.set(locMonth)
         self.month_entry = OptionMenu(self.newWin, self.month_var, *self.month_choices, command=self.get_month_value)
         self.month_entry.place(x=200, y=45, height=35, width=150)
 
         self.submit_btn = Button(self.newWin, text="Filter", fg="white",
-                                 bg="#008CFF", font=("Lilita One", 14))
+                                 bg="#008CFF", font=("Lilita One", 14), command=lambda: self.setMonth(self.newWin))
         self.submit_btn.place(x=370, y=45, height=30)
-
-
-
 
         self.moneyIn = Label(self.newWin, text="Money In:", fg='#25BCAF', font=("Lilita One", 14))
         self.moneyIn.place(x=532, y=372)
@@ -497,10 +510,8 @@ class App:
         self.spending = Label(self.newWin, text="Spending: ", fg='#25BCAF', font=("Lilita One", 14))
         self.spending.place(x=535, y=412)
 
-
         self.savings = Label(self.newWin, text="Savings:", fg="#25BCAF", font=("Lilita One", 14))
         self.savings.place(x=550, y=452)
-
 
         # %%
         self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
@@ -515,13 +526,13 @@ class App:
         c = conn.cursor()
         c.execute("SELECT SUM(EUROS) FROM MoneySpent GROUP BY STATUS")
         records = c.fetchall()
-        moneyIn_value="0"
-        spending_value="0"
-        savings_value="0"
+        moneyIn_value = "0"
+        spending_value = "0"
+        savings_value = "0"
         try:
             savings_value = str(records[0][0] - records[1][0])
             moneyIn_value = str(records[0][0])
-            spending_value= str(records[1][0])
+            spending_value = str(records[1][0])
         except:
             for record in records:
                 print_records = str(record[0])
@@ -529,8 +540,6 @@ class App:
                 moneyIn_value = str(record[0])
                 savings_value = moneyIn_value
                 spending_value = "0"
-
-
 
         self.moneyIn_amount = Label(self.newWin, text=moneyIn_value, font=("Lilita One", 14), fg='#f06292')
         self.moneyIn_amount.place(x=630, y=370, height=30, width=150)
@@ -543,6 +552,51 @@ class App:
 
         conn.commit()
         conn.close()
+
+    def play_lotto(self):
+        value = random.randint(0, 100)
+        monthList = ['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021',
+                     'Aug-2021', 'Sep-2021', 'Oct-2021', 'Nov-2021', 'Dec-2021']
+        conn = sqlite3.connect('expenses.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :STATUS, :DATE, :MONTH)",
+                  {
+                      'EUROS': 2.50,
+                      'CATEGORY': "Guilty Pleasures",
+                      'PLACE': "Home",
+                      "STATUS": "spending",
+                      "DATE": date.today().strftime("%m/%d/%Y"),
+                      "MONTH": monthList[int(datetime.now().month)-1]
+
+                  })
+
+        conn.commit()
+        conn.close()
+        if(value>60):
+            conn = sqlite3.connect('expenses.db')
+            c = conn.cursor()
+            money_earned=random.randint(5, 10)
+            c.execute("INSERT INTO MoneySpent VALUES(:EUROS, :CATEGORY, :PLACE, :STATUS, :DATE, :MONTH)",
+                      {
+                          'EUROS': money_earned,
+                          'CATEGORY': "Guilty Pleasures",
+                          'PLACE': "Home",
+                          "STATUS": "saving",
+                          "DATE": date.today().strftime("%m/%d/%Y"),
+                          "MONTH": monthList[int(datetime.now().month)-1]
+
+                      })
+
+            conn.commit()
+            conn.close()
+            tkBox.showinfo("Lotto Message", "You Won "+str(money_earned)+" Euros")
+        else:
+            tkBox.showinfo("Lotto Message", "Gambling is stupid. You Have Won Nothing")
+
+
+
+
+
 
 
 if __name__ == "__main__":
