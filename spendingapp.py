@@ -32,16 +32,20 @@ locMonth="Jan-2021"
 update_row_id=""
 startDate=(date.today()-timedelta(days=2)).strftime("%m/%d/%Y")
 endDate=date.today().strftime("%m/%d/%Y")
+loginVerifier=False
 
 #Sign In Method
 def sign_in():
+    global  loginVerifier
     enter_password = (txtfld.get())
     if enter_password in password:
+        loginVerifier = True
         password_Index = (password.index(txtfld.get()))
         # print(password_Index)
         # print(enter_password)
         # print(password[password_Index])
         if enter_password == (password[password_Index]):
+
             window.destroy()
         else:
             tkBox.showinfo('error', "Please Try Again")     #Opens a warning box
@@ -759,6 +763,9 @@ class App:
 if __name__ == "__main__":
     login_view()
     root = tk.Tk()
-    app = App(root)
-    root.mainloop()
+    if loginVerifier:
+        app = App(root)
+        root.mainloop()
+    else:
+        print("Did Not Login")
 
