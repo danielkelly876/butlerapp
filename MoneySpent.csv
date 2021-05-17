@@ -57,3 +57,9 @@ id,date,amount,category,place,status
 61,05/17/2021,10.0,Guilty Pleasures,Home,saving
 62,05/17/2021,2000.0,Groceries,Shopping,spending
 63,05/17/2021,500.0,Travel,Tour,spending
+64,05/17/2021,2.5,Guilty Pleasures,Home,spending
+65,05/17/2021,2.5,Guilty Pleasures,Home,spending
+66,05/17/2021,2.5,Guilty Pleasures,Home,spending
+67,05/17/2021,10.0,Guilty Pleasures,Home,saving
+68,05/17/2021,2.5,Guilty Pleasures,Home,spending
+69,05/17/2021,10.0,Guilty Pleasures,Home,saving

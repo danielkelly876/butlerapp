@@ -22,8 +22,9 @@ from itertools import cycle, islice
 from datetime import date, datetime, timedelta
 import csv
 
-os.system('clear')
+#Importing Libraries ends here
 
+#Global Variable Declaration
 background_color = "#0A2455"
 password = ["1234", "daniel", "asd"]
 savingsButtonState = 0
@@ -32,7 +33,7 @@ update_row_id=""
 startDate=(date.today()-timedelta(days=2)).strftime("%m/%d/%Y")
 endDate=date.today().strftime("%m/%d/%Y")
 
-
+#Sign In Method
 def sign_in():
     enter_password = (txtfld.get())
     if enter_password in password:
@@ -43,11 +44,11 @@ def sign_in():
         if enter_password == (password[password_Index]):
             window.destroy()
         else:
-            tkBox.showinfo('error', "Please Try Again")
+            tkBox.showinfo('error', "Please Try Again")     #Opens a warning box
     else:
-        tkBox.showinfo('wrong passcode', "Please Try Again")
+        tkBox.showinfo('wrong passcode', "Please Try Again")    #Opens a warning box
 
-
+#Declaring login Window and setting its properties
 window = Tk()
 img = Image.open("Loginbackground.png")
 img = img.resize((350, 460), Image.ANTIALIAS)
@@ -68,19 +69,16 @@ background_label.place(x=5, y=15)
 my_label = Label(window, text="", font=("Lilita One", 26), fg="white", bg=background_color)
 
 
-# %% sign in function
 
 
-# %% login page
-
-
+# login page
 def login_view():
     mycal.place(x=65, y=180)
     lbl1.place(x=500, y=105)
     lbl.place(x=495, y=150)
     txtfld.place(x=470, y=175, height=25)
     btn.place(x=460, y=210)
-    clock()
+    clock() #Running the Clock
     my_menu = Menu(window)
     window.config(menu=my_menu)
     file_menu = Menu(my_menu)
@@ -93,7 +91,7 @@ def login_view():
     my_label.place(x=115, y=120)
     window.mainloop()
 
-
+#Clock Method
 def clock():
     hour = time.strftime("%H")
     minute = time.strftime("%M")
@@ -106,10 +104,9 @@ def update():
     my_label.config(text="new text")
 
 
-# my_label.after(3000, update)
 
 
-# %% MAIN WINDOW
+# MAIN WINDOW
 class App:
     def __init__(self, root):
 
@@ -127,7 +124,7 @@ class App:
         saving_array = []
         spending_array = []
         budget_array = []
-
+        #Fetching the records and placing them in arrays to show data in chart
         for record in records:
             id_array.append(record[0])
             saving_array.append(record[1])
@@ -136,6 +133,8 @@ class App:
 
         conn.commit()
         conn.close()
+
+        #declaring variables for Line Chart
 
         data2 = {'id': id_array,
                  'saving': saving_array,
@@ -150,7 +149,7 @@ class App:
         line2.get_tk_widget().place(x=5, y=100)
         df2 = df2[['id', 'saving', 'spending', 'budget']].groupby('id').sum()
         df2.plot(kind='line', legend=True, ax=ax2, color=list(islice(cycle(['r', 'g', 'b']), None, len(df2))),
-                 marker='o', fontsize=10)
+                 marker='o', fontsize=10)   #Line Chart Plots Here
         ax2.set_title('Targets')
 
         # setting title
@@ -226,7 +225,7 @@ class App:
 
     conn.close()
 
-    # %% QUERY function
+    #QUERY function
     def query(self):
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
@@ -244,12 +243,15 @@ class App:
         conn.commit()
         conn.close()
 
-    # %%
+    #Fetch Category OptionBox Data
     def get_category_value(self, *args):
         return self.cat_var.get()
 
+    # Fetch Month OptionBox Data
     def get_month_value(self, *args):
         return self.month_var.get()
+
+    #Set Month
     def setMonth(self, open_scene):
         global locMonth
         locMonth = self.get_month_value()
@@ -258,7 +260,7 @@ class App:
         self.account_summary()
 
 
-    # %% SUBMIT FUNCTION
+    #SUBMIT FUNCTION
     def submit(self):
 
         conn = sqlite3.connect('expenses.db')
@@ -291,11 +293,12 @@ class App:
         self.txtfld2.delete(0, END)
         self.purposeValue.delete(0, END)
 
-    # %% add transaction function
+    #Return To menu function
     def open_mainMenu(self, open_scene):
         open_scene.destroy()
         self.__init__(root)
 
+    #Check the MoneyIn Button State
     def savingsButtonState(self):
         global savingsButtonState
         if savingsButtonState == 0:
@@ -303,6 +306,7 @@ class App:
         elif savingsButtonState == 1:
             savingsButtonState = 0
 
+    #Add Transaction view Method
     def addtrans(self):
 
         self.newWin = Toplevel(root)
@@ -353,9 +357,6 @@ class App:
                                  bg="#008CFF", font=("Lilita One", 14))
         self.submit_btn.place(x=250, y=240)
 
-        # %% add trans function
-
-        # %%
         self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
                                image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
         self.lout_btn.place(x=671, y=50)
@@ -364,9 +365,11 @@ class App:
                           font=("Lilita One", 16))
         self.rtm.place(x=593, y=100)
 
+    #Fetch Category on Setup page
     def get_setup_category_value(self, *args):
         return self.cat_var_setup.get()
 
+    #Submit The values from Setup page
     def submit_setup(self):
         conn = sqlite3.connect('expenses.db')
         c = conn.cursor()
@@ -385,6 +388,7 @@ class App:
         conn.commit()
         conn.close()
 
+    #Setup Page View
     def setup(self):
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Setup")
@@ -425,9 +429,6 @@ class App:
                                  bg="#008CFF", font=("Lilita One", 14))
         self.submit_btn.place(x=250, y=210)
 
-        # %% add trans function
-
-        # %%
         self.lout_btn = Button(self.newWin, command=root.destroy, fg="white", bg="#25BCAF", activebackground="#25BCAF",
                                image=self.btn_imgSet, text="LogOut", compound="right", font=("Lilita One", 16))
         self.lout_btn.place(x=671, y=50)
@@ -435,7 +436,7 @@ class App:
                           bg="#25BCAF", activebackground="#25BCAF", image=self.btn_imgSet,
                           text="Return To Menu", compound="right", font=("Lilita One", 16))
         self.rtm.place(x=593, y=100)
-
+    #Account Summary Function
     def account_summary(self):
         global locMonth
         # print("Local Month"+ locMonth)
@@ -467,7 +468,7 @@ class App:
         # saving_array = []
         category_array = []
         amount_array = []
-        #
+        #Placing records in arrays
         for record in records:
             category_array.append(record[1])
             amount_array.append(record[0])
@@ -490,7 +491,7 @@ class App:
             bar1 = FigureCanvasTkAgg(figure1, self.newWin)
             bar1.get_tk_widget().place(x=5, y=100)
             df1 = df1[['Category', 'Amount']].groupby('Category').sum()
-            df1.plot(kind='bar', legend=True, ax=ax1)
+            df1.plot(kind='bar', legend=True, ax=ax1)   #Plotting bar Chart
             ax1.set_title('Category Vs. Spending')
         except:
             print("Failed")
@@ -558,7 +559,7 @@ class App:
 
         conn.commit()
         conn.close()
-
+    #Playing Lotto Function | Randomized Output | Cuts 2.5 Euros in every try
     def play_lotto(self):
         value = random.randint(0, 100)
         monthList = ['Jan-2021', 'Feb-2021', 'Mar-2021', 'Apr-2021', 'May-2021', 'Jun-2021', 'Jul-2021',
@@ -601,6 +602,7 @@ class App:
 
         self.__init__(root)
 
+    #Select the record for Edit Account page
     def select_record(self):
         global update_row_id
         self.amount_box.delete(0, END)
@@ -615,6 +617,8 @@ class App:
             update_row_id=values[0]
         except:
             print("No Rows Selected")
+
+    #Update the record for the selected row from Edit Account page
     def update_record(self):
         # print(self.amount_box.get())
         # print(self.date_box.get())
@@ -630,6 +634,7 @@ class App:
         self.newWin.destroy()
         self.edit_account()
 
+    #Set the filter dates for Edit Account page
     def filter_record(self):
         global startDate, endDate
         startDate=self.date_first.get()
@@ -637,6 +642,7 @@ class App:
         self.newWin.destroy()
         self.edit_account()
 
+    #Export CSV for the filtered result
     def export_csv(self):
         with open('MoneySpent.csv', 'w', newline='') as file:
             writer=csv.writer(file)
@@ -651,7 +657,7 @@ class App:
             conn.commit()
             conn.close()
 
-
+    #Edit Account View
     def edit_account(self):
         self.newWin = Toplevel(root)
         self.newWin.title("EXPENSE TRACKER 2021 ~ Developed by Daniel | Edit Account")
@@ -756,4 +762,3 @@ if __name__ == "__main__":
     app = App(root)
     root.mainloop()
 
-# %%
