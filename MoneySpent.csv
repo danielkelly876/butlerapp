@@ -1,5 +1,5 @@
 id,date,amount,category,place,status
-6,05/16/2021,575.0,Rent,Spend,spending
+6,05/16/2021,500.0,Rent,Spend,spending
 7,05/16/2021,200.0,Rent,Spend,spending
 8,05/16/2021,300.0,Rent,asd,spending
 9,05/16/2021,2.5,Guilty Pleasures,Home,spending
@@ -52,3 +52,8 @@ id,date,amount,category,place,status
 56,05/17/2021,7.0,Guilty Pleasures,Home,saving
 57,05/17/2021,200.0,Rent,Test,saving
 58,05/17/2021,5000.0,Rent,Salary,saving
+59,05/17/2021,320.0,Groceries,My Earn From selling grocery,saving
+60,05/17/2021,2.5,Guilty Pleasures,Home,spending
+61,05/17/2021,10.0,Guilty Pleasures,Home,saving
+62,05/17/2021,2000.0,Groceries,Shopping,spending
+63,05/17/2021,500.0,Travel,Tour,spending
